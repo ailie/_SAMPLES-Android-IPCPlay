@@ -4,9 +4,13 @@ import java.util.List;
 
 import ro.haospur.aplay.R;
 import ro.haospur.aplay.architecture.IController;
-import ro.haospur.aplay.architecture.application.Controller;
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -15,7 +19,7 @@ import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.Toast;
 
-public class GUIFrontController extends Activity {
+public class GUIFrontController extends Activity implements ServiceConnection {
 
     private EditText fView_in_directoryToList;
     private Switch fView_sel_controllerConnectionState;
@@ -73,7 +77,11 @@ public class GUIFrontController extends Activity {
         if (fControllerConnectionState != State.UNBOUND) {
             return;
         }
-        updateConnectionStatus(Controller.INSTANCE, State.BOUND_AND_CONNECTED);
+        Intent service = new Intent().
+                setPackage(getPackageName()).
+                addCategory(IController.class.getName());
+        bindService(service, this, Context.BIND_AUTO_CREATE);
+        updateConnectionStatus(null, State.BOUND);
     }
 
     // Disconnect with the Controller
@@ -82,6 +90,21 @@ public class GUIFrontController extends Activity {
             return;
         }
         updateConnectionStatus(null, State.UNBOUND);
+        unbindService(this);
+    }
+
+    // Called when the connection with the service has been established, giving us the IBinder implementation provided by the service.
+    @Override
+    public void onServiceConnected(ComponentName className, IBinder service) {
+        // We've bound to a service
+        updateConnectionStatus(null, State.BOUND_AND_CONNECTED);
+    }
+
+    // Called when the connection with the service is UNEXPECTEDLY lost, not when the client unbinds deliberately.
+    @Override
+    public void onServiceDisconnected(ComponentName className) {
+        // The process hosting the service has crashed or has been killed at this point.
+        updateConnectionStatus(null, State.BOUND);
     }
 
     private void updateConnectionStatus(IController newController, State newState) {

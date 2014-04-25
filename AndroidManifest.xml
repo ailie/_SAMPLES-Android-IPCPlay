@@ -21,6 +21,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".architecture.application.ControllerService"
+            android:exported="false" >
+            <intent-filter>
+                <category android:name="ro.haospur.aplay.architecture.IController" />
+            </intent-filter>
+        </service>
         
     </application>
 
