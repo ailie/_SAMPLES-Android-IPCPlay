@@ -1,8 +1,6 @@
 package ro.haospur.aplay.architecture;
 
-import java.util.List;
-
-public interface IController {
+interface IController {
 
     /**
      * @param path

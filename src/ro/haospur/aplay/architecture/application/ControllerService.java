@@ -11,12 +11,15 @@ import android.os.IBinder;
 import android.widget.Toast;
 
 /**
+ * REMOTE service exposing the Controller directly as an IBinder
  *
+ * This service and the Controller it exposes may run in a separate process / address space than their clients. As such, the clients will
+ * use the Controller via IPC: they will communicate with it using AIDL-generated Proxies (with whom they share the same process / address space).
  */
 public class ControllerService extends Service {
 
     // The object that receives interactions from clients
-    private final IBinder fBinder = null;
+    private final IBinder fBinder = new Controller();
 
     private NotificationManager fNotificationManager;
 

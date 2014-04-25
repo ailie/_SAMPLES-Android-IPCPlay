@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.RemoteException;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -96,8 +98,8 @@ public class GUIFrontController extends Activity implements ServiceConnection {
     // Called when the connection with the service has been established, giving us the IBinder implementation provided by the service.
     @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
-        // We've bound to a service
-        updateConnectionStatus(null, State.BOUND_AND_CONNECTED);
+        // We've bound to a service that may be running in another process / address space
+        updateConnectionStatus(IController.Stub.asInterface(service), State.BOUND_AND_CONNECTED);
     }
 
     // Called when the connection with the service is UNEXPECTEDLY lost, not when the client unbinds deliberately.
@@ -123,8 +125,12 @@ public class GUIFrontController extends Activity implements ServiceConnection {
     }
 
     public void handleHI_listButton(View v) {
-        List<String> dataSet = fController.listDirectory(fView_in_directoryToList.getText().toString());
-        fView_out_filesInDirectory_adapter.clear();
-        fView_out_filesInDirectory_adapter.addAll(dataSet);
+        try {
+            List<String> dataSet = fController.listDirectory(fView_in_directoryToList.getText().toString());
+            fView_out_filesInDirectory_adapter.clear();
+            fView_out_filesInDirectory_adapter.addAll(dataSet);
+        } catch (RemoteException e) {
+            Log.e(getClass().getSimpleName(), "RemoteException", e);
+        }
     }
 }
