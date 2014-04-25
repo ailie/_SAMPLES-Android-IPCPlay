@@ -96,14 +96,14 @@ public class GUIFrontController extends Activity implements ServiceConnection {
     // Called when the connection with the service has been established, giving us the IBinder implementation provided by the service.
     @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
-        // We've bound to a service
-        updateConnectionStatus(null, State.BOUND_AND_CONNECTED);
+        // We've bound to a service that we know should be running in this current process / address space
+        updateConnectionStatus((IController) service, State.BOUND_AND_CONNECTED);
     }
 
     // Called when the connection with the service is UNEXPECTEDLY lost, not when the client unbinds deliberately.
     @Override
     public void onServiceDisconnected(ComponentName className) {
-        // The process hosting the service has crashed or has been killed at this point.
+        // The process hosting the service has crashed or has been killed at this point. As we're sharing the same process, we should never see this happen.
         updateConnectionStatus(null, State.BOUND);
     }
 

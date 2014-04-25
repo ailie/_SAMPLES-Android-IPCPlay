@@ -4,11 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import ro.haospur.aplay.architecture.IController;
+import android.os.Binder;
 import android.os.SystemClock;
 
-public enum Controller implements IController {
-
-    INSTANCE;
+class Controller extends Binder implements IController {
 
     @Override
     public List<String> listDirectory(String path) {

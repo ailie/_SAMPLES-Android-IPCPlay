@@ -11,12 +11,15 @@ import android.os.IBinder;
 import android.widget.Toast;
 
 /**
+ * LOCAL service exposing the Controller directly as an IBinder, for later downcasting
  *
+ * This service and the Controller it exposes should run in the same process / address space as their clients. As such, the clients will
+ * be able to downcast the IBinder they receive to an IController, for doing local object interaction.
  */
 public class ControllerService extends Service {
 
     // The object that receives interactions from clients
-    private final IBinder fBinder = null;
+    private final IBinder fBinder = new Controller();
 
     private NotificationManager fNotificationManager;
 
