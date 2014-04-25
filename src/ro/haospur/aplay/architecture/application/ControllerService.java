@@ -7,16 +7,25 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Messenger;
 import android.widget.Toast;
 
 /**
+ * REMOTE service exposing the Controller as a Messenger (an IBinder abstraction)
  *
+ * This service and the Controller it exposes may run in a separate process / address space than their clients. As such, the clients will
+ * use the Controller via IPC: they will communicate with it by delivering "messages" the Controller receives in its handleMessage() callback.
  */
 public class ControllerService extends Service {
 
-    // The object that receives interactions from clients
-    private final IBinder fBinder = null;
+    // Target we publish for other objects to send messages to us. This allows for the implementation of message-based IPC,
+    // by creating a Messenger (pointing to a Handler) in one process, and handing that Messenger to another process.
+    private final Messenger fMessenger = new Messenger(new Handler(new Controller()));
+
+    // The object that receives interactions from clients and will route their messages to its Messenger, which  will further route them to its Handler.
+    private final IBinder fBinder = fMessenger.getBinder();
 
     private NotificationManager fNotificationManager;
 

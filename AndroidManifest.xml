@@ -24,6 +24,7 @@
 
         <service
             android:name=".architecture.application.ControllerService"
+            android:process=":controller"
             android:exported="false" >
             <intent-filter>
                 <category android:name="ro.haospur.aplay.architecture.IController" />
